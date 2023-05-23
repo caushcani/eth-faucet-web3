@@ -1,48 +1,45 @@
 import Web3 from "web3";
 import "./App.css";
 import { useEffect, useState } from "react";
-
-interface IProvider {
-  web3: any;
-  provider: Object;
-}
+import TsxManager from "./utils/TsxManager";
+import useWeb3Provider from "./hooks/useWeb3Provide";
 
 function App() {
-  const [web3Provider, setWeb3Provider] = useState<IProvider | null>(null);
-
-  const handleConnectWallet = () => {};
-
-  //if there's already a provider, go with it, else use Web3 object.
-  const getProvider = async () => {
-    let provider = null;
-    if (window?.ethereum) {
-      provider = window?.ethereum;
-    } else if (window?.web3) {
-      provider = window.web3.currentProvider;
-    } else {
-      provider = new Web3.providers.HttpProvider("http://localhost:7545");
-    }
-    setWeb3Provider({
-      web3: new Web3(provider),
-      provider: provider,
-    });
-  };
+  const web3Provider = useWeb3Provider();
+  const [account, setAccount] = useState(null);
+  const [balance, setBalance] = useState(0);
 
   const getAccounts = async () => {
     if (web3Provider?.web3) {
       const acc = await web3Provider.web3?.eth.getAccounts();
-      debugger;
+      if (acc) {
+        setAccount(acc[0]);
+        const balanceFromAddress = await web3Provider.web3.eth.getBalance(
+          acc[0]
+        );
+        setBalance(balanceFromAddress);
+      }
     }
   };
 
   useEffect(() => {
-    getProvider();
     getAccounts();
-  }, []);
+  }, [web3Provider.web3]);
 
   return (
-    <div className="App">
-      <button onClick={() => handleConnectWallet()}>Connect wallet</button>
+    <div className="container text-center">
+      {!account && (
+        <button className="btn btn-primary" onClick={() => getAccounts()}>
+          Connect wallet
+        </button>
+      )}
+
+      <h3>Your account: {account}</h3>
+      <h4>Balance: {TsxManager.getEthFromWei(balance)}ETH</h4>
+      <div className="d-flex gap-2 justify-content-center">
+        <button className="btn btn-success">Deposit</button>
+        <button className="btn btn-danger">Withdraw</button>
+      </div>
     </div>
   );
 }
