@@ -1,6 +1,6 @@
 //since we are using truffle, artifacts is there :)
-const SampleContract = artifacts.require("Sample");
+const FaucetContract = artifacts.require("FaucetContract");
 
 module.exports = function (deployer) {
-  deployer.deploy(SampleContract);
+  deployer.deploy(FaucetContract);
 };
