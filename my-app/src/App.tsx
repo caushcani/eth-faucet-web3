@@ -14,6 +14,10 @@ function App() {
 
   const [triggerReload, setTriggerReload] = useState(false);
 
+  window.ethereum.on("accountsChanged", () => {
+    getAccounts();
+  });
+
   const withdrawNotify = () => {
     toast.success("🦄 Withdraw successfully!", {
       position: "top-right",
@@ -45,6 +49,7 @@ function App() {
       if (acc) {
         setAccount(acc[0]);
       }
+      // handleAccountChanges(web3Provider.web3.eth);
     }
   };
 
